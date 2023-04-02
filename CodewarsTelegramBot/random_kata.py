@@ -1,3 +1,6 @@
+from CodewarsTelegramBot.conf import CONSTANCE
+
+
 def get_lang_list(langs: dict):
     """
     Функция принимает словарь с приоритетами языков и создает список,
@@ -12,11 +15,11 @@ def get_lang_list(langs: dict):
     for k, v in langs.items():
         iterations = 1
         match v:
-            case "Normal":
+            case CONSTANCE.NORMAL:
                 pass
-            case "High":
+            case CONSTANCE.HIGH:
                 iterations = 2
-            case "Very High":
+            case CONSTANCE.VERY_HIGH:
                 iterations = 3
         for i in range(iterations):
             lang_list.append(k)
