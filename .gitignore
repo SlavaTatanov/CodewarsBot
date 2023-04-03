@@ -1,6 +1,7 @@
 .idea
 CodewarsTelegramBot/__pycache__/
 test/__pycache__/
+CodewarsTelegramBot/conf/__pycache__/
 alembic/
 CodewarsTelegramBot/database/__pycache__/
 alembic.ini
