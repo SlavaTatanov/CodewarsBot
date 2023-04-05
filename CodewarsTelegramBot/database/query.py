@@ -5,14 +5,10 @@ from sqlalchemy import select
 
 
 def set_user(user_id: int):
-    print("Начало запроса")
     with Session(engine) as session:
         user = User(id=user_id)
-        print("Объект создан")
         session.add(user)
-        print("Объект добавлен")
         session.commit()
-        print("Готово")
 
 
 def check_user(user_id: int) -> bool:
@@ -22,6 +18,14 @@ def check_user(user_id: int) -> bool:
             return False
         else:
             return True
+
+
+def get_langs(user_id: int) -> list[Langs] | Langs:
+    with Session(engine) as session:
+        langs = select(Langs).where(Langs.owner_id == user_id)
+        if langs is not None:
+            langs = session.execute(langs).all()
+            return [it[0] for it in langs]
 
 
 

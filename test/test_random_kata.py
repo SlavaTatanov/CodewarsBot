@@ -28,7 +28,7 @@ class TestRandomKata(TestCase):
         test_langs = ["Python", "Python", "Haskell", "Haskell", "Haskell"]
         test_levels = {"Haskell": [6, 7, 8], "Python": [4, 5, 6, 7]}
         for res in [create_random_kata(test_langs, test_levels),
-                    random_kata(Langs(lang="Python", lang_min=6, lang_max=4, lang_priority="Normal"))]:
+                    random_kata([Langs(lang="Python", lang_min=6, lang_max=4, lang_priority="Normal")])]:
             self.assertEqual(type(res), dict)
             self.assertTrue("Haskell" == res["lang"] or "Python" == res["lang"])
             self.assertTrue("lang" in res.keys() and "level" in res.keys())
