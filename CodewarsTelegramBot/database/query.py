@@ -11,6 +11,14 @@ def set_user(user_id: int):
         session.commit()
 
 
+def set_lang(user_id: int, lang: Langs):
+    if not check_user(user_id):
+        set_user(user_id)
+    with Session(engine) as session:
+        session.add(lang)
+        session.commit()
+
+
 def check_user(user_id: int) -> bool:
     with Session(engine) as session:
         user = select(User).where(User.id == user_id)
