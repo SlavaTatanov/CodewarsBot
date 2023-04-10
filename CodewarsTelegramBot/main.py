@@ -2,7 +2,7 @@ from CodewarsTelegramBot import bot
 from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang
 from CodewarsTelegramBot.database.models import Langs
 from CodewarsTelegramBot.keyboards import settings_keyboard
-from CodewarsTelegramBot.conf import CONSTANCE
+from CodewarsTelegramBot.conf.CONSTANCE import PRIORITY, STRINGS
 from CodewarsTelegramBot.random_kata import random_kata
 
 
@@ -24,13 +24,13 @@ def settings(message):
 
 def settings_router(message):
     match message.text:
-        case CONSTANCE.str_add_lang:
+        case STRINGS.str_add_lang:
             bot.send_message(message.chat.id, "Выберете язык")
             set_lang(message.chat.id, Langs(owner_id=message.chat.id,
                                             lang="Java",
                                             lang_min=8,
                                             lang_max=4,
-                                            lang_priority=CONSTANCE.NORMAL))
+                                            lang_priority=PRIORITY.NORMAL))
 
 
 if __name__ == '__main__':

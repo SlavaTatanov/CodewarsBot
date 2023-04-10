@@ -1,9 +1,9 @@
 from telebot.types import ReplyKeyboardMarkup
-from CodewarsTelegramBot.conf import CONSTANCE
+from CodewarsTelegramBot.conf.CONSTANCE import STRINGS
 
 
 def settings_keyboard():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
-    for btn in (CONSTANCE.str_add_lang, "Удалить язык", "Мои языки", "Назад"):
+    for btn in (STRINGS.str_add_lang, "Удалить язык", "Мои языки", "Назад"):
         keyboard.add(btn)
     return keyboard

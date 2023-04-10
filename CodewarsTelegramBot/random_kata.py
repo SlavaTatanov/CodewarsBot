@@ -1,4 +1,4 @@
-from CodewarsTelegramBot.conf import CONSTANCE
+from CodewarsTelegramBot.conf.CONSTANCE import PRIORITY
 from CodewarsTelegramBot.database.models import Langs
 
 
@@ -36,11 +36,11 @@ def get_lang_list(langs: dict) -> list:
     for k, v in langs.items():
         iterations = 1
         match v["priority"]:
-            case CONSTANCE.NORMAL:
+            case PRIORITY.NORMAL:
                 pass
-            case CONSTANCE.HIGH:
+            case PRIORITY.HIGH:
                 iterations = 2
-            case CONSTANCE.VERY_HIGH:
+            case PRIORITY.VERY_HIGH:
                 iterations = 3
         for i in range(iterations):
             lang_list.append(k)
