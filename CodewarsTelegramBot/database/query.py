@@ -1,39 +1,40 @@
 from CodewarsTelegramBot.database.db import engine
 from CodewarsTelegramBot.database.models import User, Langs
-from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+
+async_session = async_sessionmaker(engine, class_=AsyncSession)  # Асинхронная сессия
 
 
-def set_user(user_id: int):
-    with Session(engine) as session:
+async def set_user(user_id: int):
+    async with async_session() as session:
         user = User(id=user_id)
         session.add(user)
-        session.commit()
+        await session.commit()
 
 
-def set_lang(user_id: int, lang: Langs):
-    if not check_user(user_id):
-        set_user(user_id)
-    with Session(engine) as session:
+async def set_lang(user_id: int, lang: Langs):
+    if not await check_user(user_id):
+        await set_user(user_id)
+    with async_session() as session:
         session.add(lang)
-        session.commit()
+        await session.commit()
 
 
-def check_user(user_id: int) -> bool:
-    with Session(engine) as session:
+async def check_user(user_id: int) -> bool:
+    async with async_session() as session:
         user = select(User).where(User.id == user_id)
-        if session.scalar(user) is None:
+        if await session.scalar(user) is None:
             return False
         else:
             return True
 
 
-def get_langs(user_id: int) -> list[Langs] | Langs:
-    with Session(engine) as session:
+async def get_langs(user_id: int) -> list[Langs] | Langs:
+    async with async_session() as session:
         langs = select(Langs).where(Langs.owner_id == user_id)
-        if langs is not None:
-            langs = session.execute(langs).all()
-            return [it[0] for it in langs]
+        langs = await session.execute(langs)
+        return [it[0] for it in langs]
 
 
 
