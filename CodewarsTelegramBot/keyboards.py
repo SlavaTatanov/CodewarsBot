@@ -1,9 +1,24 @@
-from telebot.types import ReplyKeyboardMarkup
-from CodewarsTelegramBot.conf.CONSTANCE import STRINGS
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from CodewarsTelegramBot.conf.CONSTANCE import STRINGS, PRIORITY
 
 
 def settings_keyboard():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
-    for btn in (STRINGS.str_add_lang, "Удалить язык", "Мои языки", "Назад"):
-        keyboard.add(btn)
+    for btn in (STRINGS.add_lang, STRINGS.del_lang, STRINGS.my_langs, STRINGS.cancel):
+        keyboard.add(KeyboardButton(btn))
     return keyboard
+
+
+def langs_keyboard():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+    keyboard.add(KeyboardButton(STRINGS.cancel))
+    return keyboard
+
+
+def langs_priority_keyboards():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+    for it in [PRIORITY.NORMAL, PRIORITY.HIGH, PRIORITY.VERY_HIGH]:
+        keyboard.add(KeyboardButton(it))
+    keyboard.add(KeyboardButton(STRINGS.cancel))
+    return keyboard
+

@@ -21,5 +21,15 @@ class PRIORITY(BaseConstance):
 
 
 class STRINGS(BaseConstance):
-    str_add_lang = "Добавить язык"
+    add_lang = "Добавить язык"
+    del_lang = "Удалить язык"
+    my_langs = "Мои языки"
+    cancel = "Назад"
 
+
+DESCRIPTION = """
+Бот-рандомайзер, предлагает решить случайную kata с сайта CodeWars.
+Пользователь добавляет свои языки, сложность задач и приоритет для языка.
+/kata - Рандоманя задача
+/settings - Настройки
+"""

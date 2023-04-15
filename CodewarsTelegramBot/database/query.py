@@ -1,9 +1,9 @@
 from CodewarsTelegramBot.database.db import engine
 from CodewarsTelegramBot.database.models import User, Langs
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
-async_session = async_sessionmaker(engine, class_=AsyncSession)  # Асинхронная сессия
+async_session = async_sessionmaker(engine)  # Асинхронная сессия
 
 
 async def set_user(user_id: int):
@@ -35,6 +35,4 @@ async def get_langs(user_id: int) -> list[Langs] | Langs:
         langs = select(Langs).where(Langs.owner_id == user_id)
         langs = await session.execute(langs)
         return [it[0] for it in langs]
-
-
 
