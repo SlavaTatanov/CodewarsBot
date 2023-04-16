@@ -16,7 +16,7 @@ async def set_user(user_id: int):
 async def set_lang(user_id: int, lang: Langs):
     if not await check_user(user_id):
         await set_user(user_id)
-    with async_session() as session:
+    async with async_session() as session:
         session.add(lang)
         await session.commit()
 
