@@ -9,8 +9,11 @@ def settings_keyboard():
     return keyboard
 
 
-def langs_keyboard():
+def langs_keyboard(langs: list[str] = None):
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+    if langs:
+        for lang in langs:
+            keyboard.add(KeyboardButton(lang))
     keyboard.add(KeyboardButton(STRINGS.cancel))
     return keyboard
 
@@ -22,3 +25,9 @@ def langs_priority_keyboards():
     keyboard.add(KeyboardButton(STRINGS.cancel))
     return keyboard
 
+
+def submit_keyboard():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+    keyboard.add(KeyboardButton(STRINGS.yes))
+    keyboard.add(KeyboardButton(STRINGS.no))
+    return keyboard

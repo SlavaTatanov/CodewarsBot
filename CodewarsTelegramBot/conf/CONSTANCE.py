@@ -25,6 +25,8 @@ class STRINGS(BaseConstance):
     del_lang = "Удалить язык"
     my_langs = "Мои языки"
     cancel = "Назад"
+    yes = "Да"
+    no = "Нет"
 
 
 DESCRIPTION = """

@@ -1,7 +1,8 @@
-from CodewarsTelegramBot import dp, set_commands, AddLangStatesGroup, SettingsRouterStatesGroup
-from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang
+from CodewarsTelegramBot import dp, set_commands, AddLangStatesGroup, SettingsRouterStatesGroup, DelLangState, \
+    ChangeLangState
+from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query
 from CodewarsTelegramBot.database.models import Langs
-from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards
+from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards, submit_keyboard
 from CodewarsTelegramBot.conf.CONSTANCE import STRINGS, DESCRIPTION
 from CodewarsTelegramBot.random_kata import random_kata
 from aiogram import executor
@@ -12,15 +13,15 @@ from functools import wraps
 
 def cancel_option(fun):
     """
-    Обертка для сброса состояние при нажатии кнопки назад
+    Обертка для сброса состояния при нажатии кнопки назад
     """
     @wraps(fun)
-    async def wrapped_fun(message: Message, state: FSMContext, *args, **kwargs):
+    async def wrapped_fun(message: Message, state: FSMContext):
         if message.text == STRINGS.cancel:
             await state.reset_state()
             await message.answer("Возврат")
             return None
-        return await fun(message, state, *args, **kwargs)
+        return await fun(message, state)
     return wrapped_fun
 
 
@@ -70,7 +71,17 @@ async def settings_router(message: Message, state: FSMContext):
             await message.answer("Выберите язык", reply_markup=langs_keyboard())
             await AddLangStatesGroup.add_lang.set()
         case STRINGS.del_lang:
-            await message.answer("Будем удалять язык")
+            langs = await get_langs(message.from_user.id)
+            langs = [obj.lang for obj in langs]
+            keyboard = langs_keyboard(langs)
+            await message.answer("Выберете язык", reply_markup=keyboard)
+            await DelLangState.del_lang.set()
+        case STRINGS.my_langs:
+            langs = await get_langs(message.from_user.id)
+            langs = [obj.lang for obj in langs]
+            keyboard = langs_keyboard(langs)
+            await message.answer("Какой язык необходимо изменить?", reply_markup=keyboard)
+            await ChangeLangState.router.set()
 
 
 @dp.message_handler(content_types=["text"], state=AddLangStatesGroup.add_lang)
@@ -125,6 +136,40 @@ async def add_lang_min_complexity(message: Message, state: FSMContext):
         await message.answer("Готово")
     await state.finish()
 
+
+@dp.message_handler(content_types=["text"], state=DelLangState.del_lang)
+@cancel_option
+async def del_lang(message: Message, state: FSMContext):
+    """
+    Удаление языки, принимаем язык с клавиатуры
+    """
+    async with state.proxy() as data:
+        data["lang"] = message.text
+    await message.answer(f"Вы точно хотите удалить {data['lang']}?", reply_markup=submit_keyboard())
+    await DelLangState.next()
+
+
+@dp.message_handler(content_types=["text"], state=DelLangState.submit)
+@cancel_option
+async def del_lang_submit(message: Message, state: FSMContext):
+    """
+    Финальный запрос у пользователя, что он уверен в удаление языка
+    """
+    if message.text == STRINGS.no:
+        await state.reset_state()
+        await message.answer("Отмена")
+    if message.text == STRINGS.yes:
+        async with state.proxy() as data:
+            lang = data["lang"]
+            await del_lang_query(message.from_user.id, lang)
+            await message.answer("Успешно")
+            await state.finish()
+
+
+@dp.message_handler(content_types=["text"], state=ChangeLangState.router)
+@cancel_option
+async def change_lang_router(message: Message, state: FSMContext):
+    pass  # TODO
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, on_startup=set_commands)

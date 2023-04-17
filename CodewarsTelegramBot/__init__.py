@@ -25,5 +25,16 @@ class AddLangStatesGroup(StatesGroup):
     add_complexity_min = State()
 
 
+class DelLangState(StatesGroup):
+    del_lang = State()
+    submit = State()
+
+
+class ChangeLangState(StatesGroup):
+    router = State()
+    priority = State()
+    complexity = State()
+
+
 class SettingsRouterStatesGroup(StatesGroup):
     router = State()

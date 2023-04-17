@@ -36,3 +36,11 @@ async def get_langs(user_id: int) -> list[Langs] | Langs:
         langs = await session.execute(langs)
         return [it[0] for it in langs]
 
+
+async def del_lang_query(user_id: int, lang: str):
+    async with async_session() as session:
+        stmt = select(Langs).where(Langs.lang == lang, Langs.owner_id == user_id)
+        lang = await session.scalar(stmt)
+        await session.delete(lang)
+        await session.commit()
+
