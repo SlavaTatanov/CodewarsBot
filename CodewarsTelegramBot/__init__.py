@@ -31,6 +31,7 @@ class DelLangState(StatesGroup):
 
 
 class ChangeLangState(StatesGroup):
+    lang = State()
     router = State()
     priority = State()
     complexity = State()

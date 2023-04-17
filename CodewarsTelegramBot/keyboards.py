@@ -31,3 +31,11 @@ def submit_keyboard():
     keyboard.add(KeyboardButton(STRINGS.yes))
     keyboard.add(KeyboardButton(STRINGS.no))
     return keyboard
+
+
+def complexity_keyboard():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=True)
+    keyboard.add(KeyboardButton("8"), KeyboardButton("7"), KeyboardButton("6"))
+    keyboard.add(KeyboardButton("5"), KeyboardButton("4"), KeyboardButton("3"))
+    keyboard.add(KeyboardButton("2"), KeyboardButton("1"))
+    return keyboard

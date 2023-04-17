@@ -27,6 +27,9 @@ class STRINGS(BaseConstance):
     cancel = "Назад"
     yes = "Да"
     no = "Нет"
+    priority = "Приоритет"
+    max_cap = "Максимальная сложность"
+    min_cap = "Минимальная сложность"
 
 
 DESCRIPTION = """

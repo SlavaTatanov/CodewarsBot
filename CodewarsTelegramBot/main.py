@@ -2,7 +2,8 @@ from CodewarsTelegramBot import dp, set_commands, AddLangStatesGroup, SettingsRo
     ChangeLangState
 from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query
 from CodewarsTelegramBot.database.models import Langs
-from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards, submit_keyboard
+from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards, submit_keyboard, \
+    complexity_keyboard
 from CodewarsTelegramBot.conf.CONSTANCE import STRINGS, DESCRIPTION
 from CodewarsTelegramBot.random_kata import random_kata
 from aiogram import executor
@@ -81,7 +82,7 @@ async def settings_router(message: Message, state: FSMContext):
             langs = [obj.lang for obj in langs]
             keyboard = langs_keyboard(langs)
             await message.answer("Какой язык необходимо изменить?", reply_markup=keyboard)
-            await ChangeLangState.router.set()
+            await ChangeLangState.lang.set()
 
 
 @dp.message_handler(content_types=["text"], state=AddLangStatesGroup.add_lang)
@@ -104,7 +105,7 @@ async def add_lang_priority(message: Message, state: FSMContext):
     """
     async with state.proxy() as data:
         data["priority"] = message.text
-    await message.answer("Введите максимальную сложность (от 8 до 1)")
+    await message.answer("Введите максимальную сложность (от 8 до 1)", reply_markup=complexity_keyboard())
     await AddLangStatesGroup.next()
 
 
@@ -116,7 +117,7 @@ async def add_lang_max_complexity(message: Message, state: FSMContext):
     """
     async with state.proxy() as data:
         data["max_c"] = message.text
-    await message.answer("Введите минимальную сложность (от 8 до 1)")
+    await message.answer("Введите минимальную сложность (от 8 до 1)", reply_markup=complexity_keyboard())
     await AddLangStatesGroup.next()
 
 
@@ -128,10 +129,12 @@ async def add_lang_min_complexity(message: Message, state: FSMContext):
     """
     async with state.proxy() as data:
         data["min_c"] = message.text
+        complexity = [int(data["max_c"]), int(data["min_c"])]
+        complexity.sort()
         await set_lang(message.from_user.id, Langs(owner_id=message.from_user.id,
                                                    lang=data["lang"],
-                                                   lang_max=int(data["max_c"]),
-                                                   lang_min=int(data["min_c"]),
+                                                   lang_max=complexity[0],
+                                                   lang_min=complexity[1],
                                                    lang_priority=data["priority"]))
         await message.answer("Готово")
     await state.finish()
@@ -166,10 +169,35 @@ async def del_lang_submit(message: Message, state: FSMContext):
             await state.finish()
 
 
+@dp.message_handler(content_types=["text"], state=ChangeLangState.lang)
+@cancel_option
+async def change_lang(message: Message, state: FSMContext):
+    async with state.proxy() as data:
+        data["lang"] = message.text
+    await message.answer("Что необходимо изменить?")
+    await ChangeLangState.next()
+
+
 @dp.message_handler(content_types=["text"], state=ChangeLangState.router)
 @cancel_option
 async def change_lang_router(message: Message, state: FSMContext):
-    pass  # TODO
+    match message.text:
+        case STRINGS.priority:
+            await message.answer("Будем менять приоритет")
+            await ChangeLangState.priority.set()
+        case STRINGS.min_cap:
+            await message.answer("Введите минимальную сложность")
+            await ChangeLangState.complexity.set()
+
+
+@dp.message_handler(content_types=["text"], state=ChangeLangState.priority)
+@cancel_option
+async def change_lang_priority(message: Message, state: FSMContext):
+    await message.answer("Приоритет изменен")
+    async with state.proxy() as data:
+        print(data["lang"])
+    await state.reset_state()
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True, on_startup=set_commands)
