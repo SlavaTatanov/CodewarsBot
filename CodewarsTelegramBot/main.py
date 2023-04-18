@@ -1,10 +1,10 @@
 from CodewarsTelegramBot import dp, set_commands, AddLangStatesGroup, SettingsRouterStatesGroup, DelLangState, \
     ChangeLangState
-from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query
+from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query, update_lang_priority
 from CodewarsTelegramBot.database.models import Langs
 from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards, submit_keyboard, \
-    complexity_keyboard
-from CodewarsTelegramBot.conf.CONSTANCE import STRINGS, DESCRIPTION
+    complexity_keyboard, change_lang_keyboard
+from CodewarsTelegramBot.conf.CONSTANCE import STRINGS, DESCRIPTION, PRIORITY
 from CodewarsTelegramBot.random_kata import random_kata
 from aiogram import executor
 from aiogram.types import Message
@@ -174,7 +174,7 @@ async def del_lang_submit(message: Message, state: FSMContext):
 async def change_lang(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["lang"] = message.text
-    await message.answer("Что необходимо изменить?")
+    await message.answer("Что необходимо изменить?", reply_markup=change_lang_keyboard())
     await ChangeLangState.next()
 
 
@@ -183,7 +183,7 @@ async def change_lang(message: Message, state: FSMContext):
 async def change_lang_router(message: Message, state: FSMContext):
     match message.text:
         case STRINGS.priority:
-            await message.answer("Будем менять приоритет")
+            await message.answer("Выберете приоритет для языка", reply_markup=langs_priority_keyboards())
             await ChangeLangState.priority.set()
         case STRINGS.min_cap:
             await message.answer("Введите минимальную сложность")
@@ -193,10 +193,12 @@ async def change_lang_router(message: Message, state: FSMContext):
 @dp.message_handler(content_types=["text"], state=ChangeLangState.priority)
 @cancel_option
 async def change_lang_priority(message: Message, state: FSMContext):
-    await message.answer("Приоритет изменен")
-    async with state.proxy() as data:
-        print(data["lang"])
-    await state.reset_state()
+    if message.text in [PRIORITY.NORMAL, PRIORITY.HIGH, PRIORITY.VERY_HIGH]:
+        async with state.proxy() as data:
+            lang = data["lang"]
+            await update_lang_priority(message.from_user.id, lang, message.text)
+            await message.answer("Приоритет изменен")
+        await state.reset_state()
 
 
 if __name__ == '__main__':

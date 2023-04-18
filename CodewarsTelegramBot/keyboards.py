@@ -39,3 +39,9 @@ def complexity_keyboard():
     keyboard.add(KeyboardButton("5"), KeyboardButton("4"), KeyboardButton("3"))
     keyboard.add(KeyboardButton("2"), KeyboardButton("1"))
     return keyboard
+
+
+def change_lang_keyboard():
+    keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
+    keyboard.add(KeyboardButton(STRINGS.priority), KeyboardButton(STRINGS.max_cap), KeyboardButton(STRINGS.min_cap))
+    return keyboard

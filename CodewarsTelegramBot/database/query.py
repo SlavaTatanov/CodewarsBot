@@ -44,3 +44,12 @@ async def del_lang_query(user_id: int, lang: str):
         await session.delete(lang)
         await session.commit()
 
+
+async def update_lang_priority(user_id: int, lang: str, priority: str):
+    async with async_session() as session:
+        stmt = select(Langs).where(Langs.lang == lang, Langs.owner_id == user_id)
+        lang = await session.scalar(stmt)
+        lang.lang_priority = priority
+        await session.commit()
+
+
