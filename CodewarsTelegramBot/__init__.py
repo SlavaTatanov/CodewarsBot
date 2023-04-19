@@ -34,7 +34,8 @@ class ChangeLangState(StatesGroup):
     lang = State()
     router = State()
     priority = State()
-    complexity = State()
+    complexity_min = State()
+    complexity_max = State()
 
 
 class SettingsRouterStatesGroup(StatesGroup):
