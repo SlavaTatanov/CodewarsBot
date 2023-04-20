@@ -1,5 +1,5 @@
 from unittest import TestCase
-from CodewarsTelegramBot.random_kata import get_lang_list, get_lang_levels, create_lang_dict, create_random_kata, \
+from CodewarsTelegramBot.random_kata import get_lang_list, get_lang_levels, create_lang_dict, create_random_kata,\
     random_kata
 from CodewarsTelegramBot.database.models import Langs
 
@@ -20,7 +20,7 @@ class TestRandomKata(TestCase):
     def test_create_lang_dict(self):
         test_item1 = Langs(lang="Python", lang_min=6, lang_max=4, lang_priority="Normal")
         test_item2 = [test_item1, Langs(lang="Haskell", lang_min=8, lang_max=6, lang_priority="High")]
-        self.assertEqual(create_lang_dict(test_item1), {"Python": {"min": 6, "max": 4, "priority": "Normal"}})
+        self.assertEqual(create_lang_dict([test_item1]), {"Python": {"min": 6, "max": 4, "priority": "Normal"}})
         self.assertEqual(create_lang_dict(test_item2), {"Python": {"min": 6, "max": 4, "priority": "Normal"},
                                                         "Haskell": {"min": 8, "max": 6, "priority": "High"}})
 
