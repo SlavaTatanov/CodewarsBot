@@ -53,3 +53,22 @@ async def update_lang_priority(user_id: int, lang: str, priority: str):
         await session.commit()
 
 
+async def update_lang_complexity(user_id: int, lang: str, complexity: int, type_complexity: str):
+    async with async_session() as session:
+        stmt = select(Langs).where(Langs.lang == lang, Langs.owner_id == user_id)
+        lang = await session.scalar(stmt)
+        match type_complexity:
+            case "min":
+                lang.lang_min = complexity
+            case "max":
+                lang.lang_max = complexity
+        await session.commit()
+
+
+async def get_lang(user_id: int, lang: str) -> Langs:
+    async with async_session() as session:
+        stmt = select(Langs).where(Langs.lang == lang, Langs.owner_id == user_id)
+        lang = await session.scalar(stmt)
+        return lang
+
+

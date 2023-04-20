@@ -44,4 +44,5 @@ def complexity_keyboard():
 def change_lang_keyboard():
     keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1, one_time_keyboard=True)
     keyboard.add(KeyboardButton(STRINGS.priority), KeyboardButton(STRINGS.max_cap), KeyboardButton(STRINGS.min_cap))
+    keyboard.add(KeyboardButton(STRINGS.cancel))
     return keyboard

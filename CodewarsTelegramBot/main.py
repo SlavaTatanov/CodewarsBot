@@ -1,6 +1,7 @@
 from CodewarsTelegramBot import dp, set_commands, AddLangStatesGroup, SettingsRouterStatesGroup, DelLangState, \
     ChangeLangState
-from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query, update_lang_priority
+from CodewarsTelegramBot.database.query import check_user, get_langs, set_lang, del_lang_query, update_lang_priority, \
+    get_lang, update_lang_complexity
 from CodewarsTelegramBot.database.models import Langs
 from CodewarsTelegramBot.keyboards import settings_keyboard, langs_keyboard, langs_priority_keyboards, submit_keyboard, \
     complexity_keyboard, change_lang_keyboard
@@ -174,6 +175,11 @@ async def del_lang_submit(message: Message, state: FSMContext):
 async def change_lang(message: Message, state: FSMContext):
     async with state.proxy() as data:
         data["lang"] = message.text
+        lang = await get_lang(message.from_user.id, message.text)
+        await message.answer(f"Язык {lang.lang}\n"
+                             f"Приоритет - {lang.lang_priority}\n"
+                             f"Минимальная сложность - {lang.lang_min}\n"
+                             f"Максимальная сложность - {lang.lang_max}")
     await message.answer("Что необходимо изменить?", reply_markup=change_lang_keyboard())
     await ChangeLangState.next()
 
@@ -186,8 +192,11 @@ async def change_lang_router(message: Message, state: FSMContext):
             await message.answer("Выберете приоритет для языка", reply_markup=langs_priority_keyboards())
             await ChangeLangState.priority.set()
         case STRINGS.min_cap:
-            await message.answer("Введите минимальную сложность")
-            await ChangeLangState.complexity.set()
+            await message.answer("Введите минимальную сложность", reply_markup=complexity_keyboard())
+            await ChangeLangState.complexity_min.set()
+        case STRINGS.max_cap:
+            await message.answer("Введите максимальную сложность", reply_markup=complexity_keyboard())
+            await ChangeLangState.complexity_max.set()
 
 
 @dp.message_handler(content_types=["text"], state=ChangeLangState.priority)
@@ -199,6 +208,26 @@ async def change_lang_priority(message: Message, state: FSMContext):
             await update_lang_priority(message.from_user.id, lang, message.text)
             await message.answer("Приоритет изменен")
         await state.reset_state()
+
+
+@dp.message_handler(content_types=["text"], state=ChangeLangState.complexity_min)
+@cancel_option
+async def change_lang_complexity(message: Message, state: FSMContext):
+    async with state.proxy() as data:
+        lang = data["lang"]
+        await update_lang_complexity(message.from_user.id, lang, int(message.text), "min")
+        await message.answer("Выполнено")
+        await state.finish()
+
+
+@dp.message_handler(content_types=["text"], state=ChangeLangState.complexity_max)
+@cancel_option
+async def change_lang_complexity(message: Message, state: FSMContext):
+    async with state.proxy() as data:
+        lang = data["lang"]
+        await update_lang_complexity(message.from_user.id, lang, int(message.text), "max")
+        await message.answer("Выполнено")
+        await state.finish()
 
 
 if __name__ == '__main__':
