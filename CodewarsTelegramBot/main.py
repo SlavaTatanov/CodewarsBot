@@ -38,10 +38,8 @@ async def kata(message: Message):
                              "добавьте хотя бы один язык.\n/settings")
     else:
         langs = await get_langs(message.from_user.id)
-        answ = ""
-        for lng in langs:
-            answ = answ + " " + lng.lang
-        await message.answer(f"{answ}")
+        answer = random_kata(langs)
+        await message.answer(f"Язык {answer['lang']}. Сложность - {answer['level']}")
 
 
 @dp.message_handler(commands=["settings"])
