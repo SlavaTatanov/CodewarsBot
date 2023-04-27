@@ -10,6 +10,7 @@ from CodewarsTelegramBot.random_kata import random_kata
 from aiogram import executor
 from aiogram.types import Message
 from aiogram.dispatcher import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 from functools import wraps
 
 
@@ -21,7 +22,7 @@ def cancel_option(fun):
     async def wrapped_fun(message: Message, state: FSMContext):
         if message.text == STRINGS.cancel:
             await state.reset_state()
-            await message.answer("Возврат")
+            await message.answer("Возврат", reply_markup=ReplyKeyboardRemove())
             return None
         return await fun(message, state)
     return wrapped_fun
