@@ -5,3 +5,4 @@ CodewarsTelegramBot/conf/__pycache__/
 alembic/
 CodewarsTelegramBot/database/__pycache__/
 alembic.ini
+CodewarsTelegramBot/config.json

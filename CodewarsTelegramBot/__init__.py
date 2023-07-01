@@ -1,12 +1,25 @@
-from os import getenv
+import json
 from aiogram import Bot, Dispatcher
 from aiogram.dispatcher.filters.state import StatesGroup, State
 from aiogram.types import BotCommand
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
+
+def get_token():
+    with open("CodewarsTelegramBot/config.json", "r") as config:
+        data = json.load(config)
+        return data["TOKEN"]
+
+
+def get_db_conf():
+    with open("CodewarsTelegramBot/config.json", "r") as config:
+        data = json.load(config)
+        return data
+
+
 storage = MemoryStorage()
 
-_TOKEN = getenv("TOKEN")
+_TOKEN = get_token()
 
 bot = Bot(_TOKEN)
 dp = Dispatcher(bot, storage=storage)

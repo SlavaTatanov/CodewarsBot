@@ -1,0 +1,8 @@
+alembic.ini
+alembic
+.gitignore
+.git
+venv
+git_push.sh
+project_size.sh
+.idea
